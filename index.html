@@ -3,103 +3,40 @@
 <head>
   <title>SIPUD - Input Usaha</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="manifest" href="manifest.json">
-  <!-- PWA basic -->
   <meta name="theme-color" content="#2c7be5">
 
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #eef2f7;
-      margin: 0;
-    }
-
-    .header {
-      background: #2c7be5;
-      color: white;
-      padding: 15px;
-      text-align: center;
-      font-size: 18px;
-      font-weight: bold;
-    }
-
-    .container {
-      padding: 15px;
-    }
-
-    .card {
-      background: white;
-      border-radius: 10px;
-      padding: 15px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-    }
-
-    input, select {
-      width: 100%;
-      padding: 10px;
-      margin: 6px 0;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-    }
-
-    label {
-      font-weight: bold;
-      margin-top: 10px;
-      display: block;
-    }
-
-    .checkbox-group {
-      margin: 10px 0;
-    }
-
-    button {
-      width: 100%;
-      padding: 12px;
-      background: #2c7be5;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-weight: bold;
-      margin-top: 10px;
-    }
-
-    button:disabled {
-      background: gray;
-    }
-
-    /* Toast Notifikasi */
-    .toast {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #28a745;
-      color: white;
-      padding: 12px 20px;
-      border-radius: 6px;
-      display: none;
-    }
-
-    .loading {
-      text-align: center;
-      display: none;
-      margin-top: 10px;
-    }
-  </style>
+  <!-- CSS External -->
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<div class="header">SIPUD - Sistem Registrasi Pendataan Usaha Digital</div>
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <img src="bps.png" class="logo">
+  </div>
 
+  <div class="header-center">
+    <div class="title-main">SIPUD</div>
+    <div class="title-sub">Sistem Registrasi Pendataan Usaha Digital</div>
+    <div class="title-instansi">BPS Kabupaten Padang Pariaman</div>
+  </div>
+
+  <div class="header-right">
+    <img src="se.png" class="logo">
+  </div>
+</div>
+
+<!-- FORM -->
 <div class="container">
   <div class="card">
 
     <label>Petugas</label>
     <select id="petugas">
-    <option>Loading...</option>
+      <option>Loading...</option>
     </select>
-    
+
     <input id="nama_usaha" placeholder="Nama Usaha">
     <input id="nama_pemilik" placeholder="Nama Pemilik">
     <input id="no_hp" placeholder="No HP">
@@ -131,117 +68,23 @@
     <label>Foto Usaha</label>
     <input type="file" id="foto">
 
-    <button id="btnKirim" onclick="kirim()">Kirim Data</button>
-
-    <div class="loading" id="loading">Mengirim data...</div>
+    <button id="btnKirim">Kirim Data</button>
 
   </div>
 </div>
 
-<div class="toast" id="toast">Data berhasil dikirim!</div>
+<div class="toast" id="toast"></div>
 
-<script>
-let lat="", lng="";
+<!-- LOADING -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-box">
+    <img src="bps.png" class="loading-logo">
+    <div class="loading-text">Mengirim data...</div>
+  </div>
+</div>
 
-navigator.geolocation.getCurrentPosition(pos=>{
-  lat = pos.coords.latitude;
-  lng = pos.coords.longitude;
-});
-
-function showToast(msg){
-  const toast = document.getElementById("toast");
-  toast.innerText = msg;
-  toast.style.display = "block";
-
-  setTimeout(()=>{
-    toast.style.display = "none";
-  }, 3000);
-}
-
-function resetForm(){
-  document.querySelectorAll("input").forEach(i=>{
-    if(i.type !== "file") i.value = "";
-    if(i.type === "checkbox") i.checked = false;
-  });
-}
-
-function kirim(){
-  
-  // ✅ VALIDASI DI SINI (PALING ATAS)
-  if (!document.getElementById("petugas").value) {
-    alert("Petugas belum dipilih!");
-    return;
-  }
-
-  const btn = document.getElementById("btnKirim");
-  const loading = document.getElementById("loading");
-
-  const metode = [...document.querySelectorAll("input[type=checkbox]:checked")]
-    .map(e=>e.value);
-
-  const file = document.getElementById("foto").files[0];
-  const reader = new FileReader();
-
-  btn.disabled = true;
-  loading.style.display = "block";
-
-  reader.onloadend = function(){
-    const base64 = reader.result ? reader.result.split(",")[1] : "";
-
-    fetch("https://script.google.com/macros/s/AKfycbwQCMCPesfyR2kDZ2oBlHgWec0GVvGHTyKobkRgBP8XJZ0Ca83XnvhUE4kCHUti-hCz/exec", {
-      method:"POST",
-      body: JSON.stringify({
-        petugas: document.getElementById("petugas").value || "Tidak diketahui",
-        nama_usaha: document.getElementById("nama_usaha").value,
-        nama_pemilik: document.getElementById("nama_pemilik").value,
-        no_hp: document.getElementById("no_hp").value,
-        kategori: document.getElementById("kategori").value,
-        platform: document.getElementById("platform").value,
-        metode: metode,
-        lat: lat,
-        lng: lng,
-        foto: base64
-      })
-    })
-    .then(res=>res.json())
-    .then(()=>{
-      showToast("✅ Data berhasil dikirim");
-      resetForm();
-    })
-    .catch(()=>{
-      showToast("❌ Gagal kirim data");
-    })
-    .finally(()=>{
-      btn.disabled = false;
-      loading.style.display = "none";
-    });
-  };
-
-  if(file){
-    reader.readAsDataURL(file);
-  } else {
-    reader.onloadend();
-  }
-}
-
-// 🔥 Load data petugas ke dropdown
-fetch("https://script.google.com/macros/s/AKfycbwQCMCPesfyR2kDZ2oBlHgWec0GVvGHTyKobkRgBP8XJZ0Ca83XnvhUE4kCHUti-hCz/exec?petugas=true")
-.then(res => res.json())
-.then(data => {
-  const select = document.getElementById("petugas");
-  select.innerHTML = ""; // hapus loading
-
-  data.forEach(p => {
-    const opt = document.createElement("option");
-    opt.value = p[0];
-    opt.innerText = p[0];
-    select.appendChild(opt);
-  });
-})
-.catch(() => {
-  document.getElementById("petugas").innerHTML = "<option>Gagal load</option>";
-});
-</script>
+<!-- JS External -->
+<script src="js/app.js"></script>
 
 </body>
 </html>
