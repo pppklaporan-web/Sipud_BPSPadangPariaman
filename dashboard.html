@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard SIPUD</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Leaflet Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <!-- Chart -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      font-family: Arial;
+      background:#f4f6f9;
+      padding:10px;
+    }
+
+    h2 {
+      text-align:center;
+    }
+
+    .card {
+      background:white;
+      padding:15px;
+      margin:10px 0;
+      border-radius:10px;
+      box-shadow:0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    table {
+      width:100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding:8px;
+      border:1px solid #ddd;
+      text-align:center;
+    }
+
+    th {
+      background:#2c7be5;
+      color:white;
+    }
+
+    #map {
+      height:400px;
+      border-radius:10px;
+    }
+
+    .total {
+      font-size:18px;
+      font-weight:bold;
+      text-align:center;
+    }
+  </style>
+</head>
+
+<body>
+
+<h2>📊 Dashboard SIPUD</h2>
+
+<div class="card">
+  <div class="total" id="total">Loading...</div>
+</div>
+
+<div class="card">
+  <h3>🏆 Ranking Petugas</h3>
+  <table id="ranking"></table>
+</div>
+
+<div class="card">
+  <h3>📊 Grafik Petugas</h3>
+  <canvas id="chartPetugas"></canvas>
+</div>
+
+<div class="card">
+  <h3>🗺️ Peta Lokasi Usaha</h3>
+  <div id="map"></div>
+</div>
+
+<script>
+const API = "https://script.google.com/macros/s/AKfycbwQCMCPesfyR2kDZ2oBlHgWec0GVvGHTyKobkRgBP8XJZ0Ca83XnvhUE4kCHUti-hCz/exec"; // 🔥 GANTI INI
+
+fetch(API)
+.then(res => res.json())
+.then(data => {
+
+  const rows = data.slice(1);
+
+  // =========================
+  // 📦 TOTAL USAHA
+  // =========================
+  document.getElementById("total").innerHTML =
+    "Total Usaha: " + rows.length;
+
+  // =========================
+  // 🏆 RANKING PETUGAS
+  // =========================
+  const count = {};
+
+  rows.forEach(r => {
+    const petugas = r[11] || "Tidak diketahui";
+    if (!count[petugas]) count[petugas] = 0;
+    count[petugas]++;
+  });
+
+  const ranking = Object.entries(count)
+    .map(([nama, jumlah]) => ({nama, jumlah}))
+    .sort((a,b) => b.jumlah - a.jumlah);
+
+  let html = `
+    <tr>
+      <th>Rank</th>
+      <th>Petugas</th>
+      <th>Jumlah</th>
+    </tr>`;
+
+  ranking.forEach((r, i) => {
+    html += `
+      <tr>
+        <td>${i+1}</td>
+        <td>${r.nama}</td>
+        <td>${r.jumlah}</td>
+      </tr>`;
+  });
+
+  document.getElementById("ranking").innerHTML = html;
+
+  // =========================
+  // 📊 GRAFIK
+  // =========================
+  const labels = ranking.map(r => r.nama);
+  const values = ranking.map(r => r.jumlah);
+
+  new Chart(document.getElementById("chartPetugas"), {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Jumlah Usaha',
+        data: values,
+        backgroundColor: [
+          "#2c7be5","#28a745","#ffc107","#dc3545","#6f42c1","#17a2b8"
+        ]
+      }]
+    }
+  });
+
+// =========================
+// 🗺️ MAP KHUSUS PADANG PARIAMAN
+// =========================
+const map = L.map('map', {
+  center: [-0.55, 100.28], // 📍 Padang Pariaman
+  zoom: 11,
+  minZoom: 10,
+  maxZoom: 17,
+  maxBounds: [
+    [-1.0, 99.8],   // batas bawah kiri
+    [-0.2, 100.7]   // batas atas kanan
+  ]
+});
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: 'Map'
+}).addTo(map);
+
+
+// =========================
+// 📍 FILTER MARKER HANYA PADANG PARIAMAN
+// =========================
+rows.forEach(r => {
+
+  const lat = parseFloat(r[8]);
+  const lng = parseFloat(r[9]);
+
+  // batas wilayah Padang Pariaman
+  if (
+    !isNaN(lat) && !isNaN(lng) &&
+    lat >= -1.0 && lat <= -0.2 &&
+    lng >= 99.8 && lng <= 100.7
+  ) {
+
+    const marker = L.marker([lat, lng]).addTo(map);
+
+    marker.bindPopup(`
+      <b>${r[2]}</b><br>
+      Pemilik: ${r[3]}<br>
+      HP: ${r[4]}<br>
+      Kategori: ${r[5]}<br>
+      Platform: ${r[6]}<br>
+      <a href="${r[10]}" target="_blank">📷 Lihat Foto</a>
+    `);
+  }
+
+});
+
+})
+.catch(() => {
+  alert("Gagal load data dashboard");
+});
+</script>
+
+</body>
+</html>
