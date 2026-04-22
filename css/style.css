@@ -1,0 +1,73 @@
+body{
+  margin:0;
+  font-family: Arial;
+  background:#0f172a;
+  color:white;
+}
+
+.container{
+  padding:15px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+  gap:10px;
+}
+
+.card{
+  background:#1e293b;
+  padding:15px;
+  border-radius:12px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.3);
+  transition:0.2s;
+}
+
+.card:hover{
+  transform:translateY(-3px);
+}
+
+.kpi{
+  font-size:26px;
+  font-weight:bold;
+  color:#38bdf8;
+}
+
+canvas{
+  max-height:250px;
+}
+
+#map{
+  height:350px;
+  width:100%;
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  border-radius:6px;
+  font-size:12px;
+  margin:2px;
+  color:white;
+}
+
+.title-icon{
+  margin-right:8px;
+  color:#38bdf8;
+}
+
+.section-title{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:16px;
+  margin-bottom:10px;
+}
+
+.kpi-title{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:14px;
+  opacity:0.9;
+}
