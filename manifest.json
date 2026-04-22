@@ -1,7 +1,7 @@
 {
   "name": "SIPUD",
   "short_name": "SIPUD",
-  "start_url": "/input.html",
+  "start_url": "/index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#2c7be5",
