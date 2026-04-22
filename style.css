@@ -94,3 +94,45 @@ button {
 @keyframes spin {
   100% { transform: rotate(360deg); }
 }
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap; /* 🔥 ini kunci utama */
+}
+
+/* RESPONSIVE HP */
+@media(max-width:600px){
+
+  .header {
+    flex-direction: column;
+    text-align: center;
+    gap: 5px;
+  }
+
+  .header-left,
+  .header-right {
+    width: auto;
+  }
+
+  .header-center {
+    order: 2;
+  }
+
+  .logo {
+    height: 28px;
+  }
+
+  .title-main {
+    font-size: 14px;
+  }
+
+  .title-sub {
+    font-size: 10px;
+  }
+
+  .title-instansi {
+    display: none; /* optional biar tidak penuh */
+  }
+}
