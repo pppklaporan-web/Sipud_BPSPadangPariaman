@@ -28,9 +28,9 @@ const provider = new GoogleAuthProvider();
 window.loginGoogle = function () {
 
   signInWithPopup(auth, provider)
-    .then((result) => {
+    .then(() => {
 
-      window.location.href = "dashboard.html";
+      window.location.href = "sipud.html";
 
     })
     .catch((error) => {
