@@ -9,89 +9,55 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 
-/* ======================
-   1. CONFIG FIREBASE
-====================== */
-
+// CONFIG FIREBASE
 const firebaseConfig = {
   apiKey: "AIzaSyC3KLUcPszMKpEbxNNSiwIhH4lRjj_102Q",
   authDomain: "sipud1306-af588.firebaseapp.com",
   projectId: "sipud1306-af588",
-  storageBucket: "sipud1306-af588.firebasestorage.app",
-  messagingSenderId: "520121031436",
   appId: "1:520121031436:web:0a21b887ab426f54160729"
 };
 
 
-/* ======================
-   2. HUBUNGKAN FIREBASE
-====================== */
-
+// INIT
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
 
-/* ======================
-   3. LOGIN GOOGLE
-====================== */
-
+// LOGIN GOOGLE
 window.loginGoogle = function () {
-    alert("Tombol login berfungsi");
-}
 
   signInWithPopup(auth, provider)
     .then((result) => {
 
-      const user = result.user;
-
-      alert("Selamat datang " + user.displayName);
-
-      window.location.href = "sipud.html";
+      window.location.href = "dashboard.html";
 
     })
     .catch((error) => {
 
-      alert("Login gagal!");
-
+      alert("Login gagal");
       console.log(error);
 
     });
+
 };
 
 
-/* ======================
-   4. CEK STATUS LOGIN
-====================== */
-
+// AUTO REDIRECT JIKA SUDAH LOGIN
 onAuthStateChanged(auth, (user) => {
 
-  if (user) {
-
-    console.log("Login aktif:", user.email);
-
-  } else {
-
-    console.log("Belum login");
-
+  if (user && location.pathname.includes("index")) {
+    window.location.href = "sipud.html";
   }
 
 });
 
 
-/* ======================
-   5. LOGOUT
-====================== */
-
+// LOGOUT
 window.logoutUser = function () {
 
-  signOut(auth)
-    .then(() => {
-
-      alert("Logout berhasil");
-
-      window.location.href = "index.html";
-
-    });
+  signOut(auth).then(() => {
+    window.location.href = "index.html";
+  });
 
 };
