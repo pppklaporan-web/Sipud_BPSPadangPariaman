@@ -45,7 +45,7 @@ window.loginGoogle = function () {
 
       alert("Selamat datang " + user.displayName);
 
-      window.location.href = "index.html";
+      window.location.href = "sipud.html";
 
     })
     .catch((error) => {
@@ -88,7 +88,7 @@ window.logoutUser = function () {
 
       alert("Logout berhasil");
 
-      window.location.href = "login.html";
+      window.location.href = "index.html";
 
     });
 
