@@ -17,6 +17,8 @@ const firebaseConfig = {
   apiKey: "AIzaSyC3KLUcPszMKpEbxNNSiwIhH4lRjj_102Q",
   authDomain: "sipud1306-af588.firebaseapp.com",
   projectId: "sipud1306-af588",
+  storageBucket: "sipud1306-af588.firebasestorage.app",
+  messagingSenderId: "520121031436",
   appId: "1:520121031436:web:0a21b887ab426f54160729"
 };
 
